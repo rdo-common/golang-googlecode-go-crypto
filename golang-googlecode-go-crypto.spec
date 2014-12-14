@@ -16,11 +16,11 @@
 
 Name:           golang-%{provider}%{provider_sub}-go-%{repo}
 Version:        0
-Release:        0.1.hg%{shortrev}%{?dist}
+Release:        0.2.hg%{shortrev}%{?dist}
 Summary:        Supplementary Go cryptography libraries
 License:        BSD
 URL:            https://%{import_path}
-Source0:        https://%{repo}.go%{provider}%{provider_sub}.%{provider_tld}/archive/%{rev}.tar.gz
+Source0:        https://%{repo}.go.%{provider}%{provider_sub}.%{provider_tld}/archive/%{rev}.tar.gz
 %if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
 BuildArch:      noarch
 %else
@@ -125,31 +125,12 @@ which use the supplementary Go crypto libraries with golang.org/x/ imports.
 %build
 
 %install
-install -d -p %{buildroot}/%{gopath}/src/%{import_path}/
-install -d -p %{buildroot}/%{gopath}/src/%{x_import_path}/
-cp -rpav xts %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav xtea %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav twofish %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav ssh %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav sha3 %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav scrypt %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav salsa20 %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav ripemd160 %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav poly1305 %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav pbkdf2 %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav otr %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav openpgp %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav ocsp %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav nacl %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav md4 %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav hkdf %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav curve25519 %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav cast5 %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav bn256 %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav blowfish %{buildroot}/%{gopath}/src/%{import_path}/
-cp -rpav bcrypt %{buildroot}/%{gopath}/src/%{import_path}/
-
-cp -r %{buildroot}/%{gopath}/src/%{import_path}/ %{buildroot}/%{gopath}/src/%{x_import_path}/
+install -d -p %{buildroot}%{gopath}/src/%{import_path}/
+install -d -p %{buildroot}%{gopath}/src/%{x_import_path}/
+for dir in */ ; do
+    cp -rpav $dir %{buildroot}%{gopath}/src/%{import_path}/
+    cp -rpav $dir %{buildroot}%{gopath}/src/%{x_import_path}/
+done
 
 cd %{buildroot}/%{gopath}/src/%{import_path}/
 # from https://groups.google.com/forum/#!topic/golang-nuts/eD8dh3T9yyA, first post
@@ -157,38 +138,38 @@ sed -i 's/"golang\.org\/x\//"code\.google\.com\/p\/go\./g' \
         $(find . -name '*.go')
 
 %check
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/xts
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/xtea
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/twofish
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/xts
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/xtea
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/twofish
 # fails on ssh/keys_test.go:55: undefined: elliptic.P224 
 #GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/ssh
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/ssh/test
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/ssh/terminal
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/ssh/agent
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/sha3
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/scrypt
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/salsa20
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/salsa20/salsa
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/ripemd160
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/poly1305
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/pbkdf2
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/otr
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/openpgp
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/openpgp/s2k
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/openpgp/packet
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/openpgp/elgamal
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/openpgp/clearsign
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/openpgp/armor
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/ocsp
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/nacl/secretbox
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/nacl/box
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/md4
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/hkdf
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/curve25519
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/cast5
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/bn256
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/blowfish
-GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/bcrypt
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/ssh/test
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/ssh/terminal
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/ssh/agent
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/sha3
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/scrypt
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/salsa20
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/salsa20/salsa
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/ripemd160
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/poly1305
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/pbkdf2
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/otr
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/openpgp
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/openpgp/s2k
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/openpgp/packet
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/openpgp/elgamal
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/openpgp/clearsign
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/openpgp/armor
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/ocsp
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/nacl/secretbox
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/nacl/box
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/md4
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/hkdf
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/curve25519
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/cast5
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/bn256
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/blowfish
+GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}/bcrypt
 
 %files devel
 %doc LICENSE README
@@ -199,6 +180,10 @@ GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}/bcrypt
 %{gopath}/src/%{x_import_path}
 
 %changelog
+* Sun Dec 14 2014 Lokesh Mandvekar <lsm5@fedoraproject.org> - 0-0.2.hg69e2a90ed92d
+- Correct Source0 URL
+- Correct paths for golang.org/x/crypto/*
+
 * Thu Dec 04 2014 jchaloup <jchaloup@redhat.com> - 0-0.1.hg69e2a90ed92d
 - First package for Fedora
   resolves: #1148704
