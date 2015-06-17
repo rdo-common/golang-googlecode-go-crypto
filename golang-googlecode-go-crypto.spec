@@ -26,7 +26,7 @@
 
 Name:           golang-%{gc_provider}%{gc_provider_sub}-go-%{gc_repo}
 Version:        0
-Release:        0.3.git%{shortcommit}%{?dist}
+Release:        0.4.git%{shortcommit}%{?dist}
 Summary:        Supplementary Go cryptography libraries
 License:        BSD
 URL:            https://%{import_path}
@@ -189,6 +189,9 @@ go test %{x_import_path}/xts
 %{gopath}/src/%{x_import_path}
 
 %changelog
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0-0.4.gitc57d4a7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Mon Jun 15 2015 jchaloup <jchaloup@redhat.com> - 0-0.3.git%{shortcommit}
 - Repository has moved to github.com/golang/crypto, updating spec file accordingly
   resolves: #1231618
