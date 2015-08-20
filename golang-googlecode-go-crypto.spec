@@ -43,7 +43,7 @@
 
 Name:           golang-googlecode-go-crypto
 Version:        0
-Release:        0.5.git%{shortcommit}%{?dist}
+Release:        0.6.git%{shortcommit}%{?dist}
 Summary:        Supplementary Go cryptography libraries
 License:        BSD
 URL:            https://%{provider_prefix}
@@ -185,7 +185,7 @@ BuildRequires:   golang
 %endif
 
 # test subpackage tests code from devel subpackage
-Requires:        %{name}-devel = %{version}-%{release}
+Requires:        %{x_name}-devel = %{version}-%{release}
 
 %description unit-test
 %{summary}
@@ -304,6 +304,10 @@ gotest %{import_path}/xts
 %endif
 
 %changelog
+* Thu Aug 20 2015 jchaloup <jchaloup@redhat.com> - 0-0.6.gitc57d4a7
+- Choose the correct devel subpackage
+  related: #1231618
+
 * Wed Aug 19 2015 jchaloup <jchaloup@redhat.com> - 0-0.5.gitc57d4a7
 - Update spec file to spec-2.0
   related: #1231618
