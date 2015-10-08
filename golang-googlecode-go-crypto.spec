@@ -43,7 +43,7 @@
 
 Name:           golang-googlecode-go-crypto
 Version:        0
-Release:        0.6.git%{shortcommit}%{?dist}
+Release:        0.7.git%{shortcommit}%{?dist}
 Summary:        Supplementary Go cryptography libraries
 License:        BSD
 URL:            https://%{provider_prefix}
@@ -216,7 +216,7 @@ for ext in go s; do
 	done
 done
 pushd %{buildroot}/%{gopath}/src/%{gc_import_path}
-sed -i 's/"golang\.org\/x\/crypto/"code\.google\.com\/p\/crypto/g' \
+sed -i 's/"golang\.org\/x\/crypto/"code\.google\.com\/p\/go\.crypto/g' \
         $(find . -name '*.go')
 popd
 %endif
@@ -304,6 +304,10 @@ gotest %{import_path}/xts
 %endif
 
 %changelog
+* Thu Oct 08 2015 jchaloup <jchaloup@redhat.com> - 0-0.7.gitc57d4a7
+- Fix sed for import path
+  related: #1231618
+
 * Thu Aug 20 2015 jchaloup <jchaloup@redhat.com> - 0-0.6.gitc57d4a7
 - Choose the correct devel subpackage
   related: #1231618
