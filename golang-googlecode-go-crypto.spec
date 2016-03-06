@@ -2,7 +2,7 @@
 %global with_devel 1
 %global with_bundled 0
 %global with_debug 0
-%global with_check 1
+%global with_check 0
 %global with_unit_test 1
 %else
 %global with_devel 0
@@ -18,13 +18,6 @@
 %global debug_package   %{nil}
 %endif
 
-%define copying() \
-%if 0%{?fedora} >= 21 || 0%{?rhel} >= 7 \
-%license %{*} \
-%else \
-%doc %{*} \
-%endif
-
 %global provider        github
 %global provider_tld    com
 %global project         golang
@@ -32,7 +25,7 @@
 # https://github.com/golang/crypto
 %global provider_prefix %{provider}.%{provider_tld}/%{project}/%{repo}
 %global import_path     golang.org/x/crypto
-%global commit          c57d4a71915a248dbad846d60825145062b4c18e
+%global commit          c10c31b5e94b6f7a0283272dc2bb27163dcea24b
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 %global gc_import_path     code.google.com/p/go.crypto
@@ -41,26 +34,20 @@
 
 %global x_name          golang-golangorg-crypto
 
+%global devel_main      %{x_name}-devel
+
 Name:           golang-googlecode-go-crypto
 Version:        0
-Release:        0.9.git%{shortcommit}%{?dist}
+Release:        0.10.git%{shortcommit}%{?dist}
 Summary:        Supplementary Go cryptography libraries
 License:        BSD
 URL:            https://%{provider_prefix}
 Source0:        https://%{provider_prefix}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
 
-# If go_arches not defined fall through to implicit golang archs
-%if 0%{?go_arches:1}
-ExclusiveArch:  %{go_arches}
-%else
-ExclusiveArch:   %{ix86} x86_64 %{arm}
-%endif
-# If gccgo_arches does not fit or is not defined fall through to golang
-%ifarch 0%{?gccgo_arches}
-BuildRequires:   gcc-go >= %{gccgo_min_vers}
-%else
-BuildRequires:   golang
-%endif
+# e.g. el6 has ppc64 arch without gcc-go, so EA tag is required
+ExclusiveArch:  %{?go_arches:%{go_arches}}%{!?go_arches:%{ix86} x86_64 %{arm}}
+# If go_compiler is not set to 1, there is no virtual provide. Use golang instead.
+BuildRequires:  %{?go_compiler:compiler(go-compiler)}%{!?go_compiler:golang}
 
 %description
 %{summary}
@@ -166,18 +153,6 @@ building other packages which use import path with
 %if 0%{?with_unit_test}
 %package unit-test
 Summary:         Unit tests for %{name} package
-# If go_arches not defined fall through to implicit golang archs
-%if 0%{?go_arches:1}
-ExclusiveArch:  %{go_arches}
-%else
-ExclusiveArch:   %{ix86} x86_64 %{arm}
-%endif
-# If gccgo_arches does not fit or is not defined fall through to golang
-%ifarch 0%{?gccgo_arches}
-BuildRequires:   gcc-go >= %{gccgo_min_vers}
-%else
-BuildRequires:   golang
-%endif
 
 %if 0%{?with_check}
 #Here comes all BuildRequires: PACKAGE the unit tests
@@ -203,7 +178,9 @@ providing packages with %{import_path} prefix.
 # source codes for building projects
 %if 0%{?with_devel}
 install -d -p %{buildroot}/%{gopath}/src/%{import_path}/
+echo "%%dir %%{gopath}/src/%%{import_path}/." >> devel.file-list
 install -d -p %{buildroot}/%{gopath}/src/%{gc_import_path}/
+echo "%%dir %%{gopath}/src/%%{gc_import_path}/." >> gc_devel.file-list
 for ext in go s; do
 	# find all *.go but no *_test.go files and generate devel.file-list
 	for file in $(find . -iname "*.$ext" \! -iname "*_test.go") ; do
@@ -239,71 +216,77 @@ done
 
 %check
 %if 0%{?with_check} && 0%{?with_unit_test} && 0%{?with_devel}
-%ifarch 0%{?gccgo_arches}
-function gotest { %{gcc_go_test} "$@"; }
+%if ! 0%{?with_bundled}
+export GOPATH=%{buildroot}/%{gopath}:%{gopath}
 %else
-%if 0%{?golang_test:1}
-function gotest { %{golang_test} "$@"; }
-%else
-function gotest { go test "$@"; }
-%endif
+export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %endif
 
-export GOPATH=%{buildroot}/%{gopath}:%{gopath}
-gotest %{import_path}/bcrypt
-gotest %{import_path}/blowfish
-gotest %{import_path}/bn256
-gotest %{import_path}/cast5
-gotest %{import_path}/curve25519
-gotest %{import_path}/hkdf
-gotest %{import_path}/md4
-gotest %{import_path}/nacl/box
-gotest %{import_path}/nacl/secretbox
-# undefined: elliptic.P224
-#gotest %%{import_path}/ocsp
-gotest %{import_path}/openpgp
-gotest %{import_path}/openpgp/armor
-gotest %{import_path}/openpgp/clearsign
-gotest %{import_path}/openpgp/elgamal
-gotest %{import_path}/openpgp/packet
-gotest %{import_path}/openpgp/s2k
-gotest %{import_path}/otr
-gotest %{import_path}/pbkdf2
-gotest %{import_path}/poly1305
-gotest %{import_path}/ripemd160
-gotest %{import_path}/salsa20
-gotest %{import_path}/salsa20/salsa
-gotest %{import_path}/scrypt
-gotest %{import_path}/sha3
-# undefined: elliptic.P224
-#gotest %%{import_path}/ssh
-gotest %{import_path}/ssh/agent
-gotest %{import_path}/ssh/terminal
-gotest %{import_path}/ssh/test
-gotest %{import_path}/twofish
-gotest %{import_path}/xtea
-gotest %{import_path}/xts
+%if ! 0%{?gotest:1}
+%global gotest go test
 %endif
+
+%gotest %{import_path}/bcrypt
+%gotest %{import_path}/blowfish
+%gotest %{import_path}/bn256
+%gotest %{import_path}/cast5
+%gotest %{import_path}/curve25519
+%gotest %{import_path}/hkdf
+%gotest %{import_path}/md4
+%gotest %{import_path}/nacl/box
+%gotest %{import_path}/nacl/secretbox
+# undefined: elliptic.P224
+#%gotest %%{import_path}/ocsp
+%gotest %{import_path}/openpgp
+%gotest %{import_path}/openpgp/armor
+%gotest %{import_path}/openpgp/clearsign
+%gotest %{import_path}/openpgp/elgamal
+%gotest %{import_path}/openpgp/packet
+%gotest %{import_path}/openpgp/s2k
+%gotest %{import_path}/otr
+%gotest %{import_path}/pbkdf2
+%gotest %{import_path}/poly1305
+%gotest %{import_path}/ripemd160
+%gotest %{import_path}/salsa20
+%gotest %{import_path}/salsa20/salsa
+%gotest %{import_path}/scrypt
+%gotest %{import_path}/sha3
+# undefined: elliptic.P224
+#%gotest %%{import_path}/ssh
+%gotest %{import_path}/ssh/agent
+%gotest %{import_path}/ssh/terminal
+%gotest %{import_path}/ssh/test
+%gotest %{import_path}/twofish
+%gotest %{import_path}/xtea
+%gotest %{import_path}/xts
+%endif
+
+#define license tag if not already defined
+%{!?_licensedir:%global license %doc}
 
 %if 0%{?with_devel}
 %files -n %{x_name}-devel -f devel.file-list
-%copying LICENSE
+%license LICENSE
 %doc CONTRIBUTING.md README AUTHORS CONTRIBUTORS
 %dir %{gopath}/src/%{import_path}
 
 %files devel -f gc_devel.file-list
-%copying LICENSE
+%license LICENSE
 %doc CONTRIBUTING.md README AUTHORS CONTRIBUTORS
 %dir %{gopath}/src/%{gc_import_path}
 %endif
 
 %if 0%{?with_unit_test}
 %files unit-test -f unit-test.file-list
-%copying LICENSE
+%license LICENSE
 %doc CONTRIBUTING.md README AUTHORS CONTRIBUTORS
 %endif
 
 %changelog
+* Sun Mar 06 2016 jchaloup <jchaloup@redhat.com> - 0-0.10.gitc10c31b
+- Bump to upstream c10c31b5e94b6f7a0283272dc2bb27163dcea24b
+  related: #1231618
+
 * Mon Feb 22 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0-0.9.gitc57d4a7
 - https://fedoraproject.org/wiki/Changes/golang1.6
 
