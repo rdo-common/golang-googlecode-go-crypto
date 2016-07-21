@@ -38,7 +38,7 @@
 
 Name:           golang-googlecode-go-crypto
 Version:        0
-Release:        0.10.git%{shortcommit}%{?dist}
+Release:        0.11.git%{shortcommit}%{?dist}
 Summary:        Supplementary Go cryptography libraries
 License:        BSD
 URL:            https://%{provider_prefix}
@@ -283,6 +283,9 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %endif
 
 %changelog
+* Thu Jul 21 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0-0.11.gitc10c31b
+- https://fedoraproject.org/wiki/Changes/golang1.7
+
 * Sun Mar 06 2016 jchaloup <jchaloup@redhat.com> - 0-0.10.gitc10c31b
 - Bump to upstream c10c31b5e94b6f7a0283272dc2bb27163dcea24b
   related: #1231618
