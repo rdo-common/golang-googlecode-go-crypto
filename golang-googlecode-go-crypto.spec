@@ -36,7 +36,7 @@
 # https://github.com/golang/crypto
 %global provider_prefix %{provider}.%{provider_tld}/%{project}/%{repo}
 %global import_path     golang.org/x/crypto
-%global commit          c10c31b5e94b6f7a0283272dc2bb27163dcea24b
+%global commit          81372b2fc2f10bef2a7f338da115c315a56b2726
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 %global gc_import_path     code.google.com/p/go.crypto
@@ -49,7 +49,7 @@
 
 Name:           golang-googlecode-go-crypto
 Version:        0
-Release:        0.12.git%{shortcommit}%{?dist}
+Release:        0.13.git%{shortcommit}%{?dist}
 Summary:        Supplementary Go cryptography libraries
 License:        BSD
 URL:            https://%{provider_prefix}
@@ -69,13 +69,21 @@ Summary:       %{summary}
 BuildArch:     noarch
 
 %if 0%{?with_check}
+BuildRequires: golang(golang.org/x/net/context)
+BuildRequires: golang(golang.org/x/net/context/ctxhttp)
 %endif
 
+Requires: golang(golang.org/x/net/context)
+Requires: golang(golang.org/x/net/context/ctxhttp)
+
+Provides:      golang(%{gc_import_path}/acme) = %{version}-%{release}
+Provides:      golang(%{gc_import_path}/acme/autocert) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/bcrypt) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/blowfish) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/bn256) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/cast5) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/curve25519) = %{version}-%{release}
+Provides:      golang(%{gc_import_path}/ed25519) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/hkdf) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/md4) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/nacl/box) = %{version}-%{release}
@@ -90,6 +98,7 @@ Provides:      golang(%{gc_import_path}/openpgp/packet) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/openpgp/s2k) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/otr) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/pbkdf2) = %{version}-%{release}
+Provides:      golang(%{gc_import_path}/pkcs12) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/poly1305) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/ripemd160) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/salsa20) = %{version}-%{release}
@@ -101,6 +110,7 @@ Provides:      golang(%{gc_import_path}/ssh/agent) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/ssh/terminal) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/ssh/test) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/ssh/testdata) = %{version}-%{release}
+Provides:      golang(%{gc_import_path}/tea) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/twofish) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/xtea) = %{version}-%{release}
 Provides:      golang(%{gc_import_path}/xts) = %{version}-%{release}
@@ -117,13 +127,21 @@ Summary:       %{summary}
 BuildArch:     noarch
 
 %if 0%{?with_check}
+BuildRequires: golang(golang.org/x/net/context)
+BuildRequires: golang(golang.org/x/net/context/ctxhttp)
 %endif
 
+Requires: golang(golang.org/x/net/context)
+Requires: golang(golang.org/x/net/context/ctxhttp)
+
+Provides:      golang(%{import_path}/acme) = %{version}-%{release}
+Provides:      golang(%{import_path}/acme/autocert) = %{version}-%{release}
 Provides:      golang(%{import_path}/bcrypt) = %{version}-%{release}
 Provides:      golang(%{import_path}/blowfish) = %{version}-%{release}
 Provides:      golang(%{import_path}/bn256) = %{version}-%{release}
 Provides:      golang(%{import_path}/cast5) = %{version}-%{release}
 Provides:      golang(%{import_path}/curve25519) = %{version}-%{release}
+Provides:      golang(%{import_path}/ed25519) = %{version}-%{release}
 Provides:      golang(%{import_path}/hkdf) = %{version}-%{release}
 Provides:      golang(%{import_path}/md4) = %{version}-%{release}
 Provides:      golang(%{import_path}/nacl/box) = %{version}-%{release}
@@ -138,6 +156,7 @@ Provides:      golang(%{import_path}/openpgp/packet) = %{version}-%{release}
 Provides:      golang(%{import_path}/openpgp/s2k) = %{version}-%{release}
 Provides:      golang(%{import_path}/otr) = %{version}-%{release}
 Provides:      golang(%{import_path}/pbkdf2) = %{version}-%{release}
+Provides:      golang(%{import_path}/pkcs12) = %{version}-%{release}
 Provides:      golang(%{import_path}/poly1305) = %{version}-%{release}
 Provides:      golang(%{import_path}/ripemd160) = %{version}-%{release}
 Provides:      golang(%{import_path}/salsa20) = %{version}-%{release}
@@ -149,6 +168,7 @@ Provides:      golang(%{import_path}/ssh/agent) = %{version}-%{release}
 Provides:      golang(%{import_path}/ssh/terminal) = %{version}-%{release}
 Provides:      golang(%{import_path}/ssh/test) = %{version}-%{release}
 Provides:      golang(%{import_path}/ssh/testdata) = %{version}-%{release}
+Provides:      golang(%{import_path}/tea) = %{version}-%{release}
 Provides:      golang(%{import_path}/twofish) = %{version}-%{release}
 Provides:      golang(%{import_path}/xtea) = %{version}-%{release}
 Provides:      golang(%{import_path}/xts) = %{version}-%{release}
@@ -294,6 +314,10 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %endif
 
 %changelog
+* Fri Jan 13 2017 Jan Chaloupka <jchaloup@redhat.com> - 0-0.13.git81372b2
+- Bump to upstream 81372b2fc2f10bef2a7f338da115c315a56b2726
+  related: #1231618
+
 * Fri Dec 16 2016 Jan Chaloupka <jchaloup@redhat.com> - 0-0.12.gitc10c31b
 - Polish the spec file
   related: #1231618
