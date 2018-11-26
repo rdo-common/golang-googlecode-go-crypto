@@ -36,12 +36,8 @@
 # https://github.com/golang/crypto
 %global provider_prefix %{provider}.%{provider_tld}/%{project}/%{repo}
 %global import_path     golang.org/x/crypto
-%global commit          81372b2fc2f10bef2a7f338da115c315a56b2726
+%global commit          3d3f9f413869b949e48070b5bc593aa22cc2b8f2
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
-
-%global gc_import_path     code.google.com/p/go.crypto
-%global gc_rev             69e2a90ed92d03812364aeb947b7068dc42e561e
-%global gc_shortrev        %(r=%{rev}; echo ${r:0:12})
 
 %global x_name          golang-golangorg-crypto
 
@@ -49,7 +45,7 @@
 
 Name:           golang-googlecode-go-crypto
 Version:        0
-Release:        0.13.git%{shortcommit}%{?dist}
+Release:        0.14.20181125git%{shortcommit}%{?dist}
 Summary:        Supplementary Go cryptography libraries
 License:        BSD
 URL:            https://%{provider_prefix}
@@ -63,89 +59,40 @@ BuildRequires:  %{?go_compiler:compiler(go-compiler)}%{!?go_compiler:golang}
 %description
 %{summary}
 
+
 %if 0%{?with_devel}
-%package devel
-Summary:       %{summary}
-BuildArch:     noarch
-
-%if 0%{?with_check}
-BuildRequires: golang(golang.org/x/net/context)
-BuildRequires: golang(golang.org/x/net/context/ctxhttp)
-%endif
-
-Requires: golang(golang.org/x/net/context)
-Requires: golang(golang.org/x/net/context/ctxhttp)
-
-Provides:      golang(%{gc_import_path}/acme) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/acme/autocert) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/bcrypt) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/blowfish) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/bn256) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/cast5) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/curve25519) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/ed25519) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/hkdf) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/md4) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/nacl/box) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/nacl/secretbox) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/ocsp) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/openpgp) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/openpgp/armor) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/openpgp/clearsign) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/openpgp/elgamal) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/openpgp/errors) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/openpgp/packet) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/openpgp/s2k) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/otr) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/pbkdf2) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/pkcs12) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/poly1305) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/ripemd160) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/salsa20) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/salsa20/salsa) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/scrypt) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/sha3) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/ssh) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/ssh/agent) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/ssh/terminal) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/ssh/test) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/ssh/testdata) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/tea) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/twofish) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/xtea) = %{version}-%{release}
-Provides:      golang(%{gc_import_path}/xts) = %{version}-%{release}
-
-%description devel
-%{summary}
-
-This package contains library source intended for
-building other packages which use import path with
-%{gc_import_path} prefix.
-
 %package -n %{x_name}-devel
 Summary:       %{summary}
 BuildArch:     noarch
 
-%if 0%{?with_check}
-BuildRequires: golang(golang.org/x/net/context)
-BuildRequires: golang(golang.org/x/net/context/ctxhttp)
+%if 0%{?with_check} && ! 0%{?with_bundled}
+BuildRequires: golang(golang.org/x/sys/cpu)
+BuildRequires: golang(golang.org/x/sys/unix)
 %endif
 
-Requires: golang(golang.org/x/net/context)
-Requires: golang(golang.org/x/net/context/ctxhttp)
+Requires:      golang(golang.org/x/sys/cpu)
+Requires:      golang(golang.org/x/sys/unix)
 
 Provides:      golang(%{import_path}/acme) = %{version}-%{release}
 Provides:      golang(%{import_path}/acme/autocert) = %{version}-%{release}
+Provides:      golang(%{import_path}/argon2) = %{version}-%{release}
 Provides:      golang(%{import_path}/bcrypt) = %{version}-%{release}
+Provides:      golang(%{import_path}/blake2b) = %{version}-%{release}
+Provides:      golang(%{import_path}/blake2s) = %{version}-%{release}
 Provides:      golang(%{import_path}/blowfish) = %{version}-%{release}
 Provides:      golang(%{import_path}/bn256) = %{version}-%{release}
 Provides:      golang(%{import_path}/cast5) = %{version}-%{release}
+Provides:      golang(%{import_path}/chacha20poly1305) = %{version}-%{release}
+Provides:      golang(%{import_path}/cryptobyte) = %{version}-%{release}
+Provides:      golang(%{import_path}/cryptobyte/asn1) = %{version}-%{release}
 Provides:      golang(%{import_path}/curve25519) = %{version}-%{release}
 Provides:      golang(%{import_path}/ed25519) = %{version}-%{release}
 Provides:      golang(%{import_path}/hkdf) = %{version}-%{release}
 Provides:      golang(%{import_path}/md4) = %{version}-%{release}
+Provides:      golang(%{import_path}/nacl/auth) = %{version}-%{release}
 Provides:      golang(%{import_path}/nacl/box) = %{version}-%{release}
 Provides:      golang(%{import_path}/nacl/secretbox) = %{version}-%{release}
+Provides:      golang(%{import_path}/nacl/sign) = %{version}-%{release}
 Provides:      golang(%{import_path}/ocsp) = %{version}-%{release}
 Provides:      golang(%{import_path}/openpgp) = %{version}-%{release}
 Provides:      golang(%{import_path}/openpgp/armor) = %{version}-%{release}
@@ -165,6 +112,7 @@ Provides:      golang(%{import_path}/scrypt) = %{version}-%{release}
 Provides:      golang(%{import_path}/sha3) = %{version}-%{release}
 Provides:      golang(%{import_path}/ssh) = %{version}-%{release}
 Provides:      golang(%{import_path}/ssh/agent) = %{version}-%{release}
+Provides:      golang(%{import_path}/ssh/knownhosts) = %{version}-%{release}
 Provides:      golang(%{import_path}/ssh/terminal) = %{version}-%{release}
 Provides:      golang(%{import_path}/ssh/test) = %{version}-%{release}
 Provides:      golang(%{import_path}/ssh/testdata) = %{version}-%{release}
@@ -181,8 +129,9 @@ building other packages which use import path with
 %{import_path} prefix.
 %endif
 
+
 %if 0%{?with_unit_test}
-%package unit-test
+%package unit-test-devel
 Summary:         Unit tests for %{name} package
 
 %if 0%{?with_check}
@@ -193,81 +142,103 @@ Summary:         Unit tests for %{name} package
 # test subpackage tests code from devel subpackage
 Requires:        %{x_name}-devel = %{version}-%{release}
 
-%description unit-test
+%description unit-test-devel
 %{summary}
 
 This package contains unit tests for project
 providing packages with %{import_path} prefix.
 %endif
 
+
 %prep
 %setup -q -n %{repo}-%{commit}
 
+
 %build
+
 
 %install
 # source codes for building projects
 %if 0%{?with_devel}
 install -d -p %{buildroot}/%{gopath}/src/%{import_path}/
 echo "%%dir %%{gopath}/src/%%{import_path}/." >> devel.file-list
-install -d -p %{buildroot}/%{gopath}/src/%{gc_import_path}/
-echo "%%dir %%{gopath}/src/%%{gc_import_path}/." >> gc_devel.file-list
-for ext in go s; do
-	# find all *.go but no *_test.go files and generate devel.file-list
-	for file in $(find . -iname "*.$ext" \! -iname "*_test.go") ; do
-	    install -d -p %{buildroot}/%{gopath}/src/%{import_path}/$(dirname $file)
-	    cp -pav $file %{buildroot}/%{gopath}/src/%{import_path}/$file
-	    echo "%%{gopath}/src/%%{import_path}/$file" >> devel.file-list
-	    install -d -p %{buildroot}/%{gopath}/src/%{gc_import_path}/$(dirname $file)
-	    cp -pav $file %{buildroot}/%{gopath}/src/%{gc_import_path}/$file
-	    echo "%%{gopath}/src/%%{gc_import_path}/$file" >> gc_devel.file-list
-	done
+# find all *.go but no *_test.go files and generate devel.file-list
+for file in $(find . \( -iname "*.go" -or -iname "*.s" \) \! -iname "*_test.go") ; do
+    dirprefix=$(dirname $file)
+    install -d -p %{buildroot}/%{gopath}/src/%{import_path}/$dirprefix
+    cp -pav $file %{buildroot}/%{gopath}/src/%{import_path}/$file
+    echo "%%{gopath}/src/%%{import_path}/$file" >> devel.file-list
+
+    while [ "$dirprefix" != "." ]; do
+        echo "%%dir %%{gopath}/src/%%{import_path}/$dirprefix" >> devel.file-list
+        dirprefix=$(dirname $dirprefix)
+    done
 done
-pushd %{buildroot}/%{gopath}/src/%{gc_import_path}
-sed -i 's/"golang\.org\/x\/crypto/"code\.google\.com\/p\/go\.crypto/g' \
-        $(find . -name '*.go')
-popd
 %endif
 
 # testing files for this project
 %if 0%{?with_unit_test}
 install -d -p %{buildroot}/%{gopath}/src/%{import_path}/
-# find all *_test.go files and generate unit-test.file-list
-for file in $(find . -iname "*_test.go"); do
-    install -d -p %{buildroot}/%{gopath}/src/%{import_path}/$(dirname $file)
+# find all *_test.go files and generate unit-test-devel.file-list
+for file in $(find . -iname "*_test.go") ; do
+    dirprefix=$(dirname $file)
+    install -d -p %{buildroot}/%{gopath}/src/%{import_path}/$dirprefix
     cp -pav $file %{buildroot}/%{gopath}/src/%{import_path}/$file
-    echo "%%{gopath}/src/%%{import_path}/$file" >> unit-test.file-list
+    echo "%%{gopath}/src/%%{import_path}/$file" >> unit-test-devel.file-list
+
+    while [ "$dirprefix" != "." ]; do
+        echo "%%dir %%{gopath}/src/%%{import_path}/$dirprefix" >> devel.file-list
+        dirprefix=$(dirname $dirprefix)
+    done
 done
 for file in ./sha3/testdata/keccakKats.json.deflate; do
 install -d -p %{buildroot}/%{gopath}/src/%{import_path}/sha3/testdata
     cp -pav $file %{buildroot}/%{gopath}/src/%{import_path}/$file
-    echo "%%{gopath}/src/%%{import_path}/$file" >> unit-test.file-list
+    echo "%%{gopath}/src/%%{import_path}/$file" >> unit-test-devel.file-list
 done
 %endif
+
+%if 0%{?with_devel}
+sort -u -o devel.file-list devel.file-list
+%endif
+
 
 %check
 %if 0%{?with_check} && 0%{?with_unit_test} && 0%{?with_devel}
 %if ! 0%{?with_bundled}
 export GOPATH=%{buildroot}/%{gopath}:%{gopath}
 %else
-export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
+# No dependency directories so far
+
+export GOPATH=%{buildroot}/%{gopath}:%{gopath}
 %endif
 
 %if ! 0%{?gotest:1}
 %global gotest go test
 %endif
 
+%gotest %{import_path}/acme
+%gotest %{import_path}/acme/autocert
+%gotest %{import_path}/argon2
 %gotest %{import_path}/bcrypt
+%gotest %{import_path}/blake2b
+%gotest %{import_path}/blake2s
 %gotest %{import_path}/blowfish
 %gotest %{import_path}/bn256
 %gotest %{import_path}/cast5
+%gotest %{import_path}/chacha20poly1305
+%gotest %{import_path}/cryptobyte
 %gotest %{import_path}/curve25519
+%gotest %{import_path}/ed25519
 %gotest %{import_path}/hkdf
+%gotest %{import_path}/internal/chacha20
+%gotest %{import_path}/internal/subtle
 %gotest %{import_path}/md4
+%gotest %{import_path}/nacl/auth
 %gotest %{import_path}/nacl/box
 %gotest %{import_path}/nacl/secretbox
-# undefined: elliptic.P224
-#%gotest %%{import_path}/ocsp
+%gotest %{import_path}/nacl/sign
+%gotest %{import_path}/ocsp
 %gotest %{import_path}/openpgp
 %gotest %{import_path}/openpgp/armor
 %gotest %{import_path}/openpgp/clearsign
@@ -276,44 +247,44 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %gotest %{import_path}/openpgp/s2k
 %gotest %{import_path}/otr
 %gotest %{import_path}/pbkdf2
+%gotest %{import_path}/pkcs12
+%gotest %{import_path}/pkcs12/internal/rc2
 %gotest %{import_path}/poly1305
 %gotest %{import_path}/ripemd160
 %gotest %{import_path}/salsa20
 %gotest %{import_path}/salsa20/salsa
 %gotest %{import_path}/scrypt
 %gotest %{import_path}/sha3
-# undefined: elliptic.P224
-#%gotest %%{import_path}/ssh
+%gotest %{import_path}/ssh
 %gotest %{import_path}/ssh/agent
+%gotest %{import_path}/ssh/knownhosts
 %gotest %{import_path}/ssh/terminal
 %gotest %{import_path}/ssh/test
+%gotest %{import_path}/tea
 %gotest %{import_path}/twofish
 %gotest %{import_path}/xtea
 %gotest %{import_path}/xts
 %endif
 
-#define license tag if not already defined
-%{!?_licensedir:%global license %doc}
 
 %if 0%{?with_devel}
 %files -n %{x_name}-devel -f devel.file-list
-%license LICENSE
-%doc CONTRIBUTING.md README AUTHORS CONTRIBUTORS
+%license LICENSE PATENTS
+%doc CONTRIBUTING.md README.md AUTHORS CONTRIBUTORS
 %dir %{gopath}/src/%{import_path}
-
-%files devel -f gc_devel.file-list
-%license LICENSE
-%doc CONTRIBUTING.md README AUTHORS CONTRIBUTORS
-%dir %{gopath}/src/%{gc_import_path}
 %endif
 
+
 %if 0%{?with_unit_test}
-%files unit-test -f unit-test.file-list
-%license LICENSE
-%doc CONTRIBUTING.md README AUTHORS CONTRIBUTORS
+%files unit-test-devel -f unit-test-devel.file-list
+%license LICENSE PATENTS
+%doc CONTRIBUTING.md README.md AUTHORS CONTRIBUTORS
 %endif
 
 %changelog
+* Sun Nov 25 2018 Robert-André Mauchin <zebob.m@gmail.com> - 0-0.14.20181125git3d3f9f4
+- Bump to upstream 3d3f9f413869b949e48070b5bc593aa22cc2b8f2
+
 * Fri Jan 13 2017 Jan Chaloupka <jchaloup@redhat.com> - 0-0.13.git81372b2
 - Bump to upstream 81372b2fc2f10bef2a7f338da115c315a56b2726
   related: #1231618
